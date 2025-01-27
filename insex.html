@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    #sentence {
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+    #input-box {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    #results {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #333;
+    }
+    .error {
+      border: 2px solid red;
+    }
+    .success {
+      border: 2px solid green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Typing Speed Test</h1>
+    <p id="sentence">Click "Start" to begin.</p>
+    <textarea id="input-box" rows="3" disabled></textarea>
+    <div>
+      <button id="start-btn">Start</button>
+      <button id="reset-btn">Reset</button>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const sentences = [
+      "The quick brown fox jumps over the lazy dog.",
+      "Typing fast is an essential skill for developers.",
+      "Practice makes perfect in every field of work.",
+      "Code more, worry less, and keep learning!",
+      "Never stop challenging yourself to improve."
+    ];
+
+    const sentenceElement = document.getElementById("sentence");
+    const inputBox = document.getElementById("input-box");
+    const startButton = document.getElementById("start-btn");
+    const resetButton = document.getElementById("reset-btn");
+    const resultsElement = document.getElementById("results");
+
+    let startTime, selectedSentence;
+
+    function startTest() {
+      // Select a random sentence
+      selectedSentence = sentences[Math.floor(Math.random() * sentences.length)];
+      sentenceElement.textContent = selectedSentence;
+
+      // Clear previous results
+      resultsElement.textContent = "";
+      inputBox.value = "";
+      inputBox.disabled = false;
+      inputBox.focus();
+
+      // Start the timer
+      startTime = new Date();
+
+      // Add real-time error highlighting
+      inputBox.addEventListener("input", checkTyping);
+    }
+
+    function checkTyping() {
+      const typedText = inputBox.value;
+      const sentence = selectedSentence.substring(0, typedText.length);
+
+      // Highlight errors
+      if (typedText === selectedSentence) {
+        inputBox.classList.remove("error");
+        inputBox.classList.add("success");
+        finishTest();
+      } else if (typedText === sentence) {
+        inputBox.classList.remove("error");
+        inputBox.classList.add("success");
+      } else {
+        inputBox.classList.add("error");
+        inputBox.classList.remove("success");
+      }
+    }
+
+    function finishTest() {
+      const endTime = new Date();
+      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const wordsPerMinute = (selectedSentence.split(" ").length / timeTaken) * 60;
+
+      resultsElement.innerHTML = `
+        <p><strong>Time Taken:</strong> ${timeTaken.toFixed(2)} seconds</p>
+        <p><strong>Words Per Minute (WPM):</strong> ${wordsPerMinute.toFixed(2)}</p>
+      `;
+      inputBox.disabled = true;
+    }
+
+    function resetTest() {
+      inputBox.value = "";
+      inputBox.disabled = true;
+      sentenceElement.textContent = "Click 'Start' to begin.";
+      resultsElement.textContent = "";
+      inputBox.classList.remove("error", "success");
+    }
+
+    startButton.addEventListener("click", startTest);
+    resetButton.addEventListener("click", resetTest);
+  </script>
+</body>
+</html>
+
